@@ -1,10 +1,10 @@
 import React from "react";
-import ProvinceSelector from "./Components/ProvinceSelector";
+import WeatherChecker from "./Components/WeatherChecker";
 
 const App = () => {
   return (
     <div>
-      <ProvinceSelector />
+      <WeatherChecker />
     </div>
   );
 };
