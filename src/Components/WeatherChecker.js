@@ -38,76 +38,137 @@ const WeatherChecker = () => {
     return date.toLocaleTimeString("id-ID", { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Icons for weather details
+  // Icons for weather details with animations
   const getWeatherIcon = (type) => {
     const icons = {
-      temperature: '🌡️',
-      humidity: '💧',
-      wind: '🌬️',
-      pressure: '💨',
-      visibility: '👀',
-      sunrise: '🌅',
-      sunset: '🌇'
+      temperature: { emoji: '🌡️', anim: 'anim-temp' },
+      humidity: { emoji: '💧', anim: 'anim-humidity' },
+      wind: { emoji: '🌬️', anim: 'anim-wind' },
+      pressure: { emoji: '💨', anim: 'anim-pressure' },
+      visibility: { emoji: '👀', anim: 'anim-visibility' },
+      sunrise: { emoji: '🌅', anim: 'anim-sun-cycle' },
+      sunset: { emoji: '🌇', anim: 'anim-sun-cycle' }
     };
-    return icons[type] || '🔹'; // Default icon if none match
+
+    const current = icons[type] || { emoji: '🔹', anim: 'anim-default' };
+
+    return (
+      <span className={`detail-icon-anim ${current.anim}`}>
+        {current.emoji}
+      </span>
+    );
   };
 
+  const weatherCondition = weatherData ? weatherData.weather[0].main.toLowerCase() : 'default';
+
   return (
-    <div className="weather-checker">
+    <div className={`weather-checker bg-${weatherCondition}`}>
       <h1 className="title">Weather Checker</h1>
-      <label htmlFor="city" className="label">Pilih Kota: </label>
-      <select id="city" value={city} onChange={handleCityChange} className="select-city">
-        <option value="Jakarta">Jakarta</option>
-        <option value="Surabaya">Surabaya</option>
-        <option value="Bandung">Bandung</option>
-        <option value="Medan">Medan</option>
-        <option value="Yogyakarta">Yogyakarta</option>
-      </select>
+      
+      <div className="controls">
+        <label htmlFor="city" className="label">Pilih Kota: </label>
+        <select id="city" value={city} onChange={handleCityChange} className="select-city">
+          <option value="Jakarta">Jakarta</option>
+          <option value="Surabaya">Surabaya</option>
+          <option value="Bandung">Bandung</option>
+          <option value="Medan">Medan</option>
+          <option value="Yogyakarta">Yogyakarta</option>
+        </select>
+      </div>
 
       {loading ? (
-        <p className="loading-text">Loading...</p>
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p className="loading-text">Mengambil data cuaca...</p>
+        </div>
       ) : weatherData ? (
-        <div className="weather-info">
+        <div className="weather-info fade-in-up" key={weatherData.name}>
           <h2 className="city-name">Cuaca di {weatherData.name}</h2>
-          <img
-            src={`https://openweathermap.org/img/wn/${weatherData.weather[0].icon}@2x.png`}
-            alt={weatherData.weather[0].description}
-            className="weather-icon"
-          />
-         <div className="weather-details">
-  <p className="weather-detail">
-    <span className="icon">{getWeatherIcon('temperature')}</span>
-    <strong>Temperatur:</strong> {weatherData.main.temp}°C
-  </p>
-  <p className="weather-detail">
-    <span className="icon">{getWeatherIcon('wind')}</span>
-    <strong>Kondisi:</strong> {weatherData.weather[0].description}
-  </p>
-  <p className="weather-detail">
-    <span className="icon">{getWeatherIcon('humidity')}</span>
-    <strong>Kelembapan:</strong> {weatherData.main.humidity}%
-  </p>
-  <p className="weather-detail">
-    <span className="icon">{getWeatherIcon('wind')}</span>
-    <strong>Kecepatan Angin:</strong> {weatherData.wind.speed} m/s
-  </p>
-  <p className="weather-detail">
-    <span className="icon">{getWeatherIcon('pressure')}</span>
-    <strong>Tekanan Udara:</strong> {weatherData.main.pressure} hPa
-  </p>
-  <p className="weather-detail">
-    <span className="icon">{getWeatherIcon('visibility')}</span>
-    <strong>Jarak Pandang:</strong> {(weatherData.visibility / 1000).toFixed(1)} km
-  </p>
-  <p className="weather-detail">
-    <span className="icon">{getWeatherIcon('sunrise')}</span>
-    <strong>Matahari Terbit:</strong> {formatTime(weatherData.sys.sunrise)}
-  </p>
-  <p className="weather-detail">
-    <span className="icon">{getWeatherIcon('sunset')}</span>
-    <strong>Matahari Terbenam:</strong> {formatTime(weatherData.sys.sunset)}
-  </p>
-</div>
+          
+          <div className={`weather-icon-wrapper ${weatherCondition}`}>
+            {weatherData.weather[0].main === "Clear" && (
+              <div className="animated-sun">
+                <div className="sun-rays"></div>
+                <div className="sun-core"></div>
+              </div>
+            )}
+
+            {weatherData.weather[0].main === "Clouds" && (
+              <div className="animated-cloud">
+                <div className="cloud-back">☁️</div>
+         
+              </div>
+            )}
+
+            {(weatherData.weather[0].main === "Rain" ||
+              weatherData.weather[0].main === "Drizzle") && (
+              <div className="animated-rain">
+                <div className="rain-cloud">☁️</div>
+                <div className="rain-drops">
+                  <span className="drop d1">💧</span>
+                  <span className="drop d2">💧</span>
+                  <span className="drop d3">💧</span>
+                </div>
+              </div>
+            )}
+
+            {weatherData.weather[0].main === "Thunderstorm" && (
+              <div className="animated-storm">
+                <div className="storm-cloud">⛈️</div>
+                <div className="lightning">⚡</div>
+              </div>
+            )}
+
+            {weatherData.weather[0].main === "Snow" && (
+              <div className="animated-snow">
+                <span className="flake f1">❄️</span>
+                <span className="flake f2">❄️</span>
+                <span className="flake f3">❄️</span>
+              </div>
+            )}
+
+            {["Mist", "Fog", "Haze", "Smoke"].includes(weatherData.weather[0].main) && (
+              <div className="animated-fog">
+                <div className="fog-layer fog-1">🌫️</div>
+              
+              </div>
+            )}
+          </div>
+
+          <div className="weather-details">
+            <p className="weather-detail" style={{ '--delay': '0.1s' }}>
+              <span className="icon">{getWeatherIcon('temperature')}</span>
+              <strong>Temperatur:</strong> {weatherData.main.temp}°C
+            </p>
+            <p className="weather-detail" style={{ '--delay': '0.15s' }}>
+              <span className="icon">{getWeatherIcon('wind')}</span>
+              <strong>Kondisi:</strong> {weatherData.weather[0].description}
+            </p>
+            <p className="weather-detail" style={{ '--delay': '0.2s' }}>
+              <span className="icon">{getWeatherIcon('humidity')}</span>
+              <strong>Kelembapan:</strong> {weatherData.main.humidity}%
+            </p>
+            <p className="weather-detail" style={{ '--delay': '0.25s' }}>
+              <span className="icon">{getWeatherIcon('wind')}</span>
+              <strong>Kecepatan Angin:</strong> {weatherData.wind.speed} m/s
+            </p>
+            <p className="weather-detail" style={{ '--delay': '0.3s' }}>
+              <span className="icon">{getWeatherIcon('pressure')}</span>
+              <strong>Tekanan Udara:</strong> {weatherData.main.pressure} hPa
+            </p>
+            <p className="weather-detail" style={{ '--delay': '0.35s' }}>
+              <span className="icon">{getWeatherIcon('visibility')}</span>
+              <strong>Jarak Pandang:</strong> {(weatherData.visibility / 1000).toFixed(1)} km
+            </p>
+            <p className="weather-detail" style={{ '--delay': '0.4s' }}>
+              <span className="icon">{getWeatherIcon('sunrise')}</span>
+              <strong>Matahari Terbit:</strong> {formatTime(weatherData.sys.sunrise)}
+            </p>
+            <p className="weather-detail" style={{ '--delay': '0.45s' }}>
+              <span className="icon">{getWeatherIcon('sunset')}</span>
+              <strong>Matahari Terbenam:</strong> {formatTime(weatherData.sys.sunset)}
+            </p>
+          </div>
 
         </div>
       ) : (
