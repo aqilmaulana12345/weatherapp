@@ -1,3 +1,205 @@
+/* --- 1. DYNAMIC BACKGROUND TRANSITIONS & ATMOSPHERE --- */
+.weather-checker {
+  position: relative;
+  overflow: hidden;
+  transition: background 1s ease-in-out;
+}
+
+/* Efek cahaya/atmosfer mengambang di background */
+.weather-checker::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 60%);
+  animation: bgGlow 10s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Memastikan konten utama berada di atas efek background */
+.weather-checker > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes bgGlow {
+  0% { transform: scale(1) translate(0, 0); }
+  100% { transform: scale(1.1) translate(30px, 20px); }
+}
+
+/* Warna & Gradasi Background per Kondisi Cuaca dengan Sentuhan Glow */
+.weather-checker.bg-clear {
+  background: linear-gradient(135deg, #f6d365 0%, #fda085 50%, #f77062 100%) !important;
+  box-shadow: 0 15px 35px rgba(253, 160, 133, 0.4);
+}
+
+.weather-checker.bg-clouds {
+  background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 50%, #4facfe 100%) !important;
+  box-shadow: 0 15px 35px rgba(102, 166, 255, 0.4);
+}
+
+.weather-checker.bg-rain,
+.weather-checker.bg-drizzle {
+  background: linear-gradient(135deg, #3a7bd5 0%, #3a6073 50%, #1f2937 100%) !important;
+  box-shadow: 0 15px 35px rgba(58, 123, 213, 0.4);
+}
+
+.weather-checker.bg-thunderstorm {
+  background: linear-gradient(135deg, #141e30 0%, #243b55 50%, #0f172a 100%) !important;
+  box-shadow: 0 15px 35px rgba(20, 30, 48, 0.6);
+}
+
+.weather-checker.bg-mist,
+.weather-checker.bg-fog,
+.weather-checker.bg-haze,
+.weather-checker.bg-smoke {
+  background: linear-gradient(135deg, #606c88 0%, #3f4c6b 50%, #2c3e50 100%) !important;
+  box-shadow: 0 15px 35px rgba(96, 108, 136, 0.4);
+}
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #333;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- 3. LAYOUT DETAIL CUACA (GRID & STAGGER) --- */
+.weather-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.city-name {
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.weather-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 1.5rem;
+  width: 100%;
+}
+
+.weather-detail {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(5px);
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin: 0;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  
+  /* Staggered entrance */
+  opacity: 0;
+  animation: fadeInUp 0.5s ease forwards;
+  animation-delay: var(--delay, 0s);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.weather-detail:hover {
+  transform: translateY(-3px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* --- 4. IKON DETAIL BERANIMASI --- */
+.detail-icon-anim {
+  display: inline-block;
+  font-size: 1.25rem;
+  transform-origin: center;
+}
+
+.anim-temp {
+  animation: tempPulse 2s ease-in-out infinite;
+}
+@keyframes tempPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.2) rotate(8deg); }
+}
+
+.anim-humidity {
+  animation: waterBounce 2.2s ease-in-out infinite;
+}
+@keyframes waterBounce {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-4px) scaleY(1.1); }
+}
+
+.anim-wind, .anim-pressure {
+  animation: windBlow 2.5s ease-in-out infinite;
+}
+@keyframes windBlow {
+  0%, 100% { transform: translateX(0); opacity: 0.9; }
+  50% { transform: translateX(5px); opacity: 1; }
+}
+
+.anim-visibility {
+  animation: eyeLook 3.5s ease-in-out infinite;
+}
+@keyframes eyeLook {
+  0%, 40%, 100% { transform: translateX(0); }
+  50%, 65% { transform: translateX(-3px); }
+  75%, 90% { transform: translateX(3px); }
+}
+
+.anim-sun-cycle {
+  animation: sunFloatDetail 3s ease-in-out infinite alternate;
+}
+@keyframes sunFloatDetail {
+  from { transform: translateY(2px) scale(0.95); }
+  to { transform: translateY(-2px) scale(1.08); }
+}
+
+.anim-default {
+  animation: spinSlow 6s linear infinite;
+}
+@keyframes spinSlow {
+  to { transform: rotate(360deg); }
+}
+
+.weather-detail:hover .detail-icon-anim {
+  animation-duration: 0.7s;
+}
+
 .weather-checker {
   text-align: center;
   min-height: 100vh;
@@ -52,4 +254,142 @@
 .no-data {
   color: #333;
   font-size: 1.5rem;
+}
+
+
+
+
+.weather-icon-wrapper {
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin: 20px auto;
+  overflow: hidden;
+}
+
+/* SUN */
+.animated-sun {
+  width: 100px;
+  height: 100px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: sunFloat 3s ease-in-out infinite;
+}
+
+.sun-rays {
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    #ffbd39 0deg 12deg,
+    transparent 12deg 30deg
+  );
+  animation: rotateSun 15s linear infinite;
+}
+
+.sun-core {
+  position: relative;
+  width: 75px;
+  height: 75px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff5a5, #ffae00);
+  box-shadow: 0 0 35px #ffbd39;
+  z-index: 1;
+}
+
+/* CLOUD */
+.animated-cloud {
+  font-size: 90px;
+  animation: cloudMove 3s ease-in-out infinite;
+  filter: drop-shadow(0 8px 8px rgba(0,0,0,.15));
+}
+
+/* RAIN */
+.animated-rain {
+  position: relative;
+  font-size: 65px;
+  animation: cloudMove 3s ease-in-out infinite;
+}
+
+.rain-drops {
+  position: absolute;
+  font-size: 19px;
+  left: 12px;
+  top: 65px;
+  letter-spacing: 5px;
+  animation: rainFall 0.8s linear infinite;
+}
+
+/* THUNDERSTORM */
+.animated-storm {
+  position: relative;
+  font-size: 75px;
+  animation: cloudMove 2s ease-in-out infinite;
+}
+
+.lightning {
+  position: absolute;
+  font-size: 45px;
+  left: 40px;
+  top: 65px;
+  animation: lightningFlash 1.2s infinite;
+}
+
+/* SNOW */
+.animated-snow {
+  font-size: 90px;
+  animation: snowFall 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px #8edbff);
+}
+
+/* FOG */
+.animated-fog {
+  font-size: 85px;
+  animation: fogMove 4s ease-in-out infinite;
+}
+
+/* ANIMATIONS */
+@keyframes rotateSun {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sunFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes cloudMove {
+  0%, 100% { transform: translateX(-5px); }
+  50% { transform: translateX(8px); }
+}
+
+@keyframes rainFall {
+  0% { transform: translateY(-5px); opacity: 0; }
+  50% { opacity: 1; }
+  100% { transform: translateY(15px); opacity: 0; }
+}
+
+@keyframes lightningFlash {
+  0%, 80%, 100% { opacity: 0; }
+  82%, 88% { opacity: 1; }
+  85% { opacity: 0.2; }
+}
+
+@keyframes snowFall {
+  0%, 100% { transform: translateY(-8px) rotate(0deg); }
+  50% { transform: translateY(10px) rotate(25deg); }
+}
+
+@keyframes fogMove {
+  0%, 100% { transform: translateX(-8px); opacity: .6; }
+  50% { transform: translateX(8px); opacity: 1; }
 }
