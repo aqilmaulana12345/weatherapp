@@ -393,3 +393,11 @@
   0%, 100% { transform: translateX(-8px); opacity: .6; }
   50% { transform: translateX(8px); opacity: 1; }
 }
+
+
+/* Jika layar HP sangat kecil (< 480px), jadikan 1 kolom saja agar tidak berantakan */
+@media (max-width: 480px) {
+  .weather-details {
+    grid-template-columns: 1fr; 
+  }
+}
